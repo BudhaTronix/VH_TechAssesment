@@ -29,9 +29,8 @@ def remove_silence(waveform, top_db=15, min_chunk_size=10000, sample_rate=16000,
     return waves, start_list, end_list
 
 
-def generate_csv():
+def generate_csv(wav_file_name, output_file_name, save_csv, top_db, min_chunk_size):
     # Task -1
-    wav_file_name = '../audio_files/train-horn-challenge.wav'
     sample_rate, wav_data = wavfile.read(wav_file_name, 'rb')
     wav_data = wav_data[:, 0]
 
@@ -43,17 +42,20 @@ def generate_csv():
 
     waveform = wav_data / tf.int16.max
 
-    waves, start_list, end_list = remove_silence(waveform, sample_rate=sample_rate)
+    waves, start_list, end_list = remove_silence(waveform,top_db=top_db,
+                                                 min_chunk_size=min_chunk_size,
+                                                 sample_rate=sample_rate)
 
     print("Number of train sounds:", len(waves))
     df = pd.DataFrame(list(zip(start_list, end_list)),
                       columns=['Start', 'End'])
     df['Duration'] = df['End'] - df['Start']
     df['Rank'] = df['Duration'].rank(ascending=False)
-
-    df.to_csv("../output_files/output.csv")
     temp_df = df.sort_values(by=['Duration']).iloc[-1]
     print("Details of the longest duration signal")
     print(f'Start: {temp_df.Start:.2f}s')
     print(f'End: {temp_df.End:.2f}s')
     print(f'Total Duration: {temp_df.Duration:.2f}s')
+
+    if save_csv:
+        df.to_csv(output_file_name)
