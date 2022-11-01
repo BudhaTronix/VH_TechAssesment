@@ -1,4 +1,4 @@
-# Vision Health Technical Assesment
+# VisionHealth Technical Assesment
 
 1. Analyze the audio file
 2. Come up with a strategy to classify each horn sound event using an artificial intelligence solution
